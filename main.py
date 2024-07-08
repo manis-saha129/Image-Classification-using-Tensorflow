@@ -1,8 +1,9 @@
+import numpy as np
 import tensorflow as tf
 from tensorflow import keras
 from keras import layers, datasets
 import matplotlib.pyplot as plt
-import random
+import cv2
 
 # Load the CIFAR-10 dataset
 (x_train, y_train), (x_test, y_test) = datasets.cifar10.load_data()
@@ -21,6 +22,8 @@ model = keras.Sequential([
     layers.Dense(64, activation='relu'),
     layers.Dense(10)
 ])
+
+model.summary()
 
 # Compile the model
 model.compile(optimizer='adam',
@@ -51,3 +54,34 @@ plt.ylabel('Loss')
 plt.legend()
 
 plt.show()
+
+# Class names for CIFAR-10
+class_names = ['airplane', 'automobile', 'bird', 'cat', 'deer',
+               'dog', 'frog', 'horse', 'ship', 'truck']
+
+
+# Function to preprocess and predict image class
+def predict_and_plot(image_path):
+    img = cv2.imread(image_path)
+    img_resized = cv2.resize(img, (32, 32))
+    img_normalized = img_resized / 255.0
+    test_input = np.expand_dims(img_normalized, axis=0)
+    predictions = model.predict(test_input)
+    predicted_class = class_names[np.argmax(predictions)]
+    plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+    plt.title(f'Prediction: {predicted_class}')
+    plt.axis('off')
+    plt.show()
+
+
+# Test the model with images
+predict_and_plot('images/airplane.jpg')
+predict_and_plot('images/automobile.jpg')
+predict_and_plot('images/bird.jpg')
+predict_and_plot('images/cat.jpg')
+predict_and_plot('images/deer.jpeg')
+predict_and_plot('images/dog.jpg')
+predict_and_plot('images/frog.jpeg')
+predict_and_plot('images/horse.jpeg')
+predict_and_plot('images/ship.jpg')
+predict_and_plot('images/truck.jpg')
